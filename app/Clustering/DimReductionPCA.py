@@ -7,33 +7,28 @@ import numpy as np
 class DimReductionPCA(Module):
     def __init__(self, prev_module):
         super().__init__('DimReductionPCA', prev_module)
-        self._coordinate_mapping = None
 
     def run(self):
         super().run()
-        clusters = self._prev_model.get_module_results()
-        features = clusters['features']
-        centers = clusters['centers']
+        features = self._data['features']
+        centers = self._data['centers']
         features = np.concatenate((features, centers))
 
         pca = PCA(n_components=2)
         pca_result = pca.fit_transform(features)
-        pca1 = pca_result[:len(clusters['features']), 0]
-        pca2 = pca_result[:len(clusters['features']), 1]
-        pcac1 = pca_result[len(clusters['features']):, 0]
-        pcac2 = pca_result[len(clusters['features']):, 1]
+        pca1 = pca_result[:len(self._data['features']), 0]
+        pca2 = pca_result[:len(self._data['features']), 1]
+        pcac1 = pca_result[len(self._data['features']):, 0]
+        pcac2 = pca_result[len(self._data['features']):, 1]
 
-        self._coordinate_mapping = {
-            'images': clusters['images'],
-            'labels': clusters['labels'],
+        self._result = {
+            'images': self._data['images'],
+            'labels': self._data['labels'],
             'cx': pcac1,
             'cy': pcac2,
             'x': pca1,
             'y': pca2
         }
-
-    def get_module_results(self):
-        return self._coordinate_mapping
 
     def visualize(self, glyph_size=0.05):
         result = self.get_module_results()

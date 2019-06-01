@@ -7,27 +7,22 @@ import matplotlib.pyplot as plt
 class FeatureClusters(Module):
     def __init__(self, prev_module, num_clusters):
         super().__init__('FeatureClusters', prev_module)
-        self._clusters = None
         self._num_clusters = num_clusters
 
     def run(self):
         super().run()
-        f = self._prev_model.get_module_results()
-        features = f['features']
+        features = self._data['features']
         features = np.array(features)
         print('Clustering {} images in {} clusters'.format(len(features), self._num_clusters))
         kmeans = KMeans(n_clusters=self._num_clusters, random_state=0).fit(features)
 
-        self._clusters = {
-            'images': f['images'],
-            'features': f['features'],
+        self._result = {
+            'images': self._data['images'],
+            'features': self._data['features'],
             'labels': kmeans.labels_,
             'centers': kmeans.cluster_centers_,
             'kmeans': kmeans,
         }
-
-    def get_module_results(self):
-        return self._clusters
 
     def visualize(self):
         result = self.get_module_results()

@@ -7,33 +7,28 @@ import matplotlib.pyplot as plt
 class DimReductionTSNE(Module):
     def __init__(self, prev_module):
         super().__init__('DimReductionTSNE', prev_module)
-        self._coordinate_mapping = None
 
     def run(self):
         super().run()
-        clusters = self._prev_model.get_module_results()
-        features = clusters['features']
-        centers = clusters['centers']
+        features = self._data['features']
+        centers = self._data['centers']
         features = np.concatenate((features, centers))
 
         tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
         tsne_results = tsne.fit_transform(features)
-        tsne1 = tsne_results[:len(clusters['features']), 0]
-        tsne2 = tsne_results[:len(clusters['features']), 1]
-        tsnec1 = tsne_results[len(clusters['features']):, 0]
-        tsnec2 = tsne_results[len(clusters['features']):, 1]
+        tsne1 = tsne_results[:len(self._data['features']), 0]
+        tsne2 = tsne_results[:len(self._data['features']), 1]
+        tsnec1 = tsne_results[len(self._data['features']):, 0]
+        tsnec2 = tsne_results[len(self._data['features']):, 1]
 
-        self._coordinate_mapping = {
-            'images': clusters['images'],
-            'labels': clusters['labels'],
+        self._result = {
+            'images': self._data['images'],
+            'labels': self._data['labels'],
             'cx': tsnec1,
             'cy': tsnec2,
             'x': tsne1,
             'y': tsne2
         }
-
-    def get_module_results(self):
-        return self._coordinate_mapping
 
     def visualize(self, glyph_size=1):
         result = self.get_module_results()

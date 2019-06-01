@@ -8,19 +8,17 @@ from sklearn.cluster import KMeans
 class ImageFeaturesSIFT(Module):
     def __init__(self, prev_module):
         super().__init__('ImageFeatures', prev_module)
-        self._features = None
 
     def run(self):
         super().run()
-        images = self._prev_model.get_module_results()
 
-        self._features = {
-            'images': images,
+        self._result = {
+            'images': self._data,
             'features': [],
         }
 
         descriptors = []
-        for image in images:
+        for image in self._data:
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             sift = cv2.xfeatures2d.SIFT_create()
             kp, des = sift.detectAndCompute(gray, None)
@@ -32,10 +30,7 @@ class ImageFeaturesSIFT(Module):
         bag_of_words = KMeans(n_clusters=50, random_state=0).fit(descriptors)
 
         # TODO Build BoW histograms
-        self._features['features'] = None
-
-    def get_module_results(self):
-        return self._features
+        self._result['features'] = None
 
     def visualize(self):
         result = self.get_module_results()

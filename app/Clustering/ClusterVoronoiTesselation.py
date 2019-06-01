@@ -8,26 +8,31 @@ import matplotlib.pyplot as plt
 class ClusterVoronoiTesselation(Module):
     def __init__(self, prev_module):
         super().__init__('ClusterVoronoiTesslation', prev_module)
-        self._result = None
 
     def run(self):
         super().run()
-        coordinate_mapping = self._prev_model.get_module_results()
-        points = np.concatenate((np.array([coordinate_mapping['cx']]).T, np.array([coordinate_mapping['cy']]).T), axis=1)
-
+        points = np.concatenate((np.array([self._data['cx']]).T, np.array([self._data['cy']]).T), axis=1)
         voronoi = Voronoi(points)
+        self._create_result(voronoi)
+
+    def _create_result(self, voronoi):
         self._result = {
-            'images': coordinate_mapping['images'],
-            'labels': coordinate_mapping['labels'],
-            'cx': coordinate_mapping['cx'],
-            'cy': coordinate_mapping['cy'],
-            'x': coordinate_mapping['x'],
-            'y': coordinate_mapping['y'],
+            'clusters': [],
             'voronoi': voronoi
         }
 
-    def get_module_results(self):
-        return self._result
+        num_unique_labels = len(np.unique(self._data['labels']))
+        points = np.concatenate((np.array([self._data['x']]).T, np.array([self._data['y']]).T), axis=1)
+        centers = np.concatenate((np.array([self._data['cx']]).T, np.array([self._data['cy']]).T), axis=1)
+        for label in range(num_unique_labels):
+            p = [p for i, p in enumerate(points) if self._data['labels'][i] == label]
+            imgs = [img for i, img in enumerate(self._data['images']) if self._data['labels'][i] == label]
+            self._result['clusters'].append({
+                'images': imgs,
+                'label': label,
+                'points': p,
+                'center': centers[label],
+            })
 
     def visualize(self):
         result = self.get_module_results()
