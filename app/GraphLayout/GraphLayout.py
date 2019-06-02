@@ -7,7 +7,7 @@ class GraphLayout(Module):
         super().__init__('2_GRAPH_LAYOUT', prev_module)
 
     def run(self):
-        link_nodes = LinkNodes(self._prev_model)
+        link_nodes = LinkNodes(self._prev_model, 0.1)
 
         link_nodes.run()
         self._result = link_nodes.get_module_results()

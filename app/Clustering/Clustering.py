@@ -24,5 +24,6 @@ class Clustering(Module):
         cluster_voronoi_tesselation = ClusterVoronoiTesselation(dim_reduction)
 
         cluster_voronoi_tesselation.run()
+        dim_reduction.visualize()
         self._result = cluster_voronoi_tesselation.get_module_results()
         print('+++++++++ ' + self._name + ' DONE +++++++++\n')
