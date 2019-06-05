@@ -16,6 +16,12 @@ class DimReductionPCA(Module):
 
         pca = PCA(n_components=2)
         pca_result = pca.fit_transform(features)
+
+        # Normalize results
+        pca_result[:, 0] = (-np.min(pca_result[:, 0]) + pca_result[:, 0])/(-np.min(pca_result[:, 0]) + np.max(pca_result[:, 0]))
+        pca_result[:, 1] = (-np.min(pca_result[:, 1]) + pca_result[:, 1])/(-np.min(pca_result[:, 1]) + np.max(pca_result[:, 1]))
+
+        # Extract coordinates
         pca1 = pca_result[:len(self._data['features']), 0]
         pca2 = pca_result[:len(self._data['features']), 1]
         pcac1 = pca_result[len(self._data['features']):, 0]

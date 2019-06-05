@@ -38,6 +38,6 @@ class ClusterVoronoiTesselation(Module):
         result = self.get_module_results()
         plt.figure()
         voronoi_plot_2d(result['voronoi'])
-        plt.scatter(result['x'], result['y'], c=result['labels'], s=5, cmap='Dark2')
+        #plt.scatter(result['x'], result['y'], c=result['labels'], s=5, cmap='Dark2')
         plt.savefig('graph.pdf', dpi=800)
         plt.show()

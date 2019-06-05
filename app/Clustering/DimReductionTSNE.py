@@ -15,11 +15,17 @@ class DimReductionTSNE(Module):
         features = np.concatenate((features, centers))
 
         tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
-        tsne_results = tsne.fit_transform(features)
-        tsne1 = tsne_results[:len(self._data['features']), 0]
-        tsne2 = tsne_results[:len(self._data['features']), 1]
-        tsnec1 = tsne_results[len(self._data['features']):, 0]
-        tsnec2 = tsne_results[len(self._data['features']):, 1]
+        tsne_result = tsne.fit_transform(features)
+
+        # Normalize results
+        tsne_result[:, 0] = (-np.min(tsne_result[:, 0]) + tsne_result[:, 0]) / (-np.min(tsne_result[:, 0]) + np.max(tsne_result[:, 0]))
+        tsne_result[:, 1] = (-np.min(tsne_result[:, 1]) + tsne_result[:, 1]) / (-np.min(tsne_result[:, 1]) + np.max(tsne_result[:, 1]))
+
+        # Extract coordinates
+        tsne1 = tsne_result[:len(self._data['features']), 0]
+        tsne2 = tsne_result[:len(self._data['features']), 1]
+        tsnec1 = tsne_result[len(self._data['features']):, 0]
+        tsnec2 = tsne_result[len(self._data['features']):, 1]
 
         self._result = {
             'images': self._data['images'],

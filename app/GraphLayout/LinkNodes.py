@@ -31,11 +31,12 @@ class LinkNodes(Module):
                     distance = np.linalg.norm(point1-point2)
                     print(distance)
                     if distance < self._eps:
-                        edges.append((point1_name, point2_name))
-            G.add_edges_from(edges)
+                        edges.append((point1_name, point2_name, distance))
+            G.add_weighted_edges_from(edges)
 
         plt.figure()
-        kkpos = nx.drawing.kamada_kawai_layout(G, scale=0.8)
+        kkpos = nx.drawing.kamada_kawai_layout(G, scale=1, pos=pos)
         nx.draw(G, with_labels=True, pos=kkpos)
         plt.show()
-        print('lol')
+
+        self._result = self._data
