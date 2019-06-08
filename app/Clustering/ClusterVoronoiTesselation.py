@@ -1,24 +1,28 @@
 from app.Module import Module
 import numpy as np
 import cv2
+import app.tools.clipped_voronoi as clv
 from scipy.spatial import Voronoi, voronoi_plot_2d
 import matplotlib.pyplot as plt
 
 
 class ClusterVoronoiTesselation(Module):
-    def __init__(self, prev_module):
+    def __init__(self, prev_module, num_iterations=15):
         super().__init__('ClusterVoronoiTesslation', prev_module)
+        self._num_iterations = num_iterations
 
     def run(self):
         super().run()
         points = np.concatenate((np.array([self._data['cx']]).T, np.array([self._data['cy']]).T), axis=1)
-        voronoi = Voronoi(points)
-        self._create_result(voronoi)
 
-    def _create_result(self, voronoi):
+        centroids, voronoi = clv.cvt(points, [0, 1, 0, 1], self._num_iterations)
+        self._create_result(centroids, voronoi)
+
+    def _create_result(self, centroids, voronoi):
         self._result = {
             'clusters': [],
-            'voronoi': voronoi
+            'voronoi': voronoi,
+            'centroids': centroids
         }
 
         num_unique_labels = len(np.unique(self._data['labels']))
@@ -38,6 +42,6 @@ class ClusterVoronoiTesselation(Module):
         result = self.get_module_results()
         plt.figure()
         voronoi_plot_2d(result['voronoi'])
-        #plt.scatter(result['x'], result['y'], c=result['labels'], s=5, cmap='Dark2')
-        plt.savefig('graph.pdf', dpi=800)
+        plt.xlim((0, 1))
+        plt.ylim((0, 1))
         plt.show()

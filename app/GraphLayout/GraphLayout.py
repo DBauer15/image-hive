@@ -1,6 +1,7 @@
 from app.Module import Module
 from app.GraphLayout.ImageSaliency import ImageSaliency
 from app.GraphLayout.LinkNodes import LinkNodes
+from app.GraphLayout.ConstraintLayout import ConstraintLayout
 
 
 class GraphLayout(Module):
@@ -9,8 +10,9 @@ class GraphLayout(Module):
 
     def run(self):
         image_saliency = ImageSaliency(self._prev_model)
-        link_nodes = LinkNodes(image_saliency, 0.01)
+        link_nodes = LinkNodes(image_saliency, 1)
 
         link_nodes.run()
+        link_nodes.visualize()
         self._result = link_nodes.get_module_results()
         print('+++++++++ ' + self._name + ' DONE +++++++++\n')
