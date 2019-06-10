@@ -1,7 +1,7 @@
 from app.Module import Module
 from app.GraphLayout.ImageSaliency import ImageSaliency
-from app.GraphLayout.LinkNodes import LinkNodes
-from app.GraphLayout.ConstraintLayout import ConstraintLayout
+from app.GraphLayout.BubbleLayout import BubbleLayout
+from app.GraphLayout.LayoutComposition import LayoutComposition
 
 
 class GraphLayout(Module):
@@ -10,9 +10,12 @@ class GraphLayout(Module):
 
     def run(self):
         image_saliency = ImageSaliency(self._prev_model)
-        link_nodes = LinkNodes(image_saliency, 1)
+        bubble_layout = BubbleLayout(image_saliency, delta=0.0)
+        layout_composition = LayoutComposition(bubble_layout, delta=0, out_size=700)
 
-        link_nodes.run()
-        link_nodes.visualize()
-        self._result = link_nodes.get_module_results()
+        final = layout_composition
+
+        final.run()
+        final.visualize()
+        self._result = final.get_module_results()
         print('+++++++++ ' + self._name + ' DONE +++++++++\n')

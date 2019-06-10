@@ -9,7 +9,7 @@ class Loading(Module):
         self.source_path = source_path
 
     def run(self):
-        image_source = ImageSource(self.source_path)
+        image_source = ImageSource(self.source_path, 'jpeg')
         image_loader = ImageLoader(image_source)
 
         image_loader.run()

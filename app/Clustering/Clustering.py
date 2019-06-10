@@ -17,10 +17,7 @@ class Clustering(Module):
         image_features = ImageFeaturesHistogram(self._prev_model)
         feature_clusters = FeatureClusters(image_features, num_clusters=self.num_clusters)
         cluster_size_reduction = ClusterSizeReduction(feature_clusters, num_elements_per_cluster=self.num_samples_per_cluster)
-        if self.num_samples_per_cluster > 10:
-            dim_reduction = DimReductionTSNE(cluster_size_reduction)
-        else:
-            dim_reduction = DimReductionPCA(cluster_size_reduction)
+        dim_reduction = DimReductionPCA(cluster_size_reduction)
         cluster_voronoi_tesselation = ClusterVoronoiTesselation(dim_reduction)
 
         cluster_voronoi_tesselation.run()

@@ -1,6 +1,7 @@
 from app.Module import Module
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class ImageSaliency(Module):
@@ -20,7 +21,9 @@ class ImageSaliency(Module):
                 saliency = cv2.saliency.StaticSaliencySpectralResidual_create()
                 (success, saliency_map) = saliency.computeSaliency(img)
                 saliency_map = (saliency_map * 255).astype("uint8")
-                ret, thresh = cv2.threshold(saliency_map, 40, 255, 0)
+                ret, thresh = cv2.threshold(saliency_map, 200, 255, 0)
+                kernel = np.ones((5, 5), dtype=np.uint8)
+                thresh = cv2.dilate(thresh, kernel=kernel, iterations=3)
                 im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
                 contour = max(contours, key=cv2.contourArea)
                 (x, y), radius = cv2.minEnclosingCircle(contour)
