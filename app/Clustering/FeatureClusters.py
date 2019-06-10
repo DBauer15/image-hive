@@ -12,7 +12,7 @@ class FeatureClusters(Module):
     predefined number of clusters.
 
     Attributes:
-        num_clusters: Number of clusters to split into (int)
+        _num_clusters: Number of clusters to split into (int)
     """
     def __init__(self, prev_module, num_clusters):
         super().__init__('FeatureClusters', prev_module)

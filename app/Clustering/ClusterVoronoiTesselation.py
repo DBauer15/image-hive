@@ -12,7 +12,7 @@ class ClusterVoronoiTesselation(Module):
     In addition it runs CVT to evenly distribute the cells in the given space.
 
     Attributes:
-        num_iterations: Number of iterations to use for CVT (int)
+        _num_iterations: Number of iterations to use for CVT (int)
     """
     def __init__(self, prev_module, num_iterations=15):
         super().__init__('ClusterVoronoiTesslation', prev_module)

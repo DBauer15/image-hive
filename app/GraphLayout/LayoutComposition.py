@@ -13,8 +13,8 @@ class LayoutComposition(Module):
     each pixel in the final image. The corresponding pixel value is then applied at that point.
 
     Attributes:
-        delta: Delta padding to use to compose(draw) salient regions in a cluster (float)
-        out_size: Size (in pixels) of the resulting image (int)
+        _delta: Delta padding to use to compose(draw) salient regions in a cluster (float)
+        _out_size: Size (in pixels) of the resulting image (int)
     """
     def __init__(self, prev_module, delta, out_size):
         super().__init__('LayoutComposition', prev_module)

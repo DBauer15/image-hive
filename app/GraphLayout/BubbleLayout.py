@@ -12,7 +12,7 @@ class BubbleLayout(Module):
     It uses brownian motion in combination with repulsion forces to achieve a aesthetically satisfying distribution.
 
     Attributes:
-        delta: Delta margin to add to saliency regions (float)
+        _delta: Delta margin to add to saliency regions (float)
     """
     def __init__(self, prev_module, delta=0.05):
         super().__init__('BubbleLayout', prev_module)

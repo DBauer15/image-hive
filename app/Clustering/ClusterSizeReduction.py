@@ -8,11 +8,11 @@ class ClusterSizeReduction(Module):
     This class reduces the number of images in a cluster to the specified amount.
 
     Attributes:
-        num_elements_per_cluster: Number of elements per cluster to reduce to (int)
+        _num_elements_per_cluster: Number of elements per cluster to reduce to (int)
     """
     def __init__(self, prev_module, num_elements_per_cluster):
         super().__init__('ClusterSizeReduction', prev_module)
-        self.num_elements_per_cluster = num_elements_per_cluster
+        self._num_elements_per_cluster = num_elements_per_cluster
 
     def run(self):
         super().run()
@@ -44,8 +44,8 @@ class ClusterSizeReduction(Module):
         # Choose num_elements_per_cluster images/labels/features based on min distance
         for i in range(num_unique_labels):
             nearest = distances[distances[:, 0] == i]
-            if len(nearest) >= self.num_elements_per_cluster:
-                nearest = nearest[:self.num_elements_per_cluster, :]
+            if len(nearest) >= self._num_elements_per_cluster:
+                nearest = nearest[:self._num_elements_per_cluster, :]
             for n in nearest:
                 index = int(n[1])
                 self._result['images'].append(self._data['images'][index])

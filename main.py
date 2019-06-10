@@ -3,19 +3,42 @@ from app.Clustering.Clustering import Clustering
 from app.GraphLayout.GraphLayout import GraphLayout
 import os.path as path
 import os
+import sys
 
-IMAGE_FOLDER = 'images3'
-IMAGE_FILE_TYPE = 'jpeg'
-IMAGE_WIDTH = 127
-
-CLUSTERS = 6
-SAMPLES_PER_CLUSTER = 6
-
-LAYOUT_DELTA = 0
-COMPOSITION_DELTA = 0
-COMPOSITION_SIZE = 100
 
 def main():
+
+    # Read args (we need 8)
+    if len(sys.argv)-1 == 8:
+        print('Using passed argument settings.')
+        IMAGE_FOLDER = sys.argv[1]
+        IMAGE_FILE_TYPE = sys.argv[2]
+        IMAGE_WIDTH = int(sys.argv[3])
+        CLUSTERS = int(sys.argv[4])
+        SAMPLES_PER_CLUSTER = int(sys.argv[5])
+        LAYOUT_DELTA = float(sys.argv[6])
+        COMPOSITION_DELTA = float(sys.argv[7])
+        COMPOSITION_SIZE = int(sys.argv[8])
+    else:
+        print('Using default settings.')
+        IMAGE_FOLDER = 'images3'
+        IMAGE_FILE_TYPE = 'jpeg'
+        IMAGE_WIDTH = 127
+        CLUSTERS = 6
+        SAMPLES_PER_CLUSTER = 6
+        LAYOUT_DELTA = 0
+        COMPOSITION_DELTA = 0
+        COMPOSITION_SIZE = 500
+
+    print('IMAGE_FOLDER: {}'.format(IMAGE_FOLDER))
+    print('IMAGE_FILE_TYPE: {}'.format(IMAGE_FILE_TYPE))
+    print('IMAGE_WIDTH: {}'.format(IMAGE_WIDTH))
+    print('CLUSTERS: {}'.format(CLUSTERS))
+    print('SAMPLES_PER_CLUSTER: {}'.format(SAMPLES_PER_CLUSTER))
+    print('LAYOUT_DELTA: {}'.format(LAYOUT_DELTA))
+    print('COMPOSITION_DELTA: {}'.format(COMPOSITION_DELTA))
+    print('COMPOSITION_SIZE: {}'.format(COMPOSITION_SIZE))
+    return
 
     # Assemble pipeline
 
