@@ -3,6 +3,14 @@ import cv2
 
 
 class ImageLoader(Module):
+    """Loads images from disk and resizes them.
+
+    This class uses a list of files from previous modules to load images.
+    Images are then resized to width. Aspect ratio is preserved.
+
+    Attributes:
+        width: Width to resize images to (int)
+    """
     def __init__(self, prev_module, width=127):
         super().__init__('ImageLoader', prev_module)
         self._width = width

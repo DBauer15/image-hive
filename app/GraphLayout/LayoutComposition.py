@@ -1,17 +1,25 @@
 from app.Module import Module
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import matplotlib.transforms as transforms
 import numpy as np
 import cv2
 
 
 class LayoutComposition(Module):
+    """Composes the final image.
+
+    This class uses the results of layout modules to create the final render.
+    To render the image a raycasting like technique is used to find the closest salient region for
+    each pixel in the final image. The corresponding pixel value is then applied at that point.
+
+    Attributes:
+        delta: Delta padding to use to compose(draw) salient regions in a cluster (float)
+        out_size: Size (in pixels) of the resulting image (int)
+    """
     def __init__(self, prev_module, delta, out_size):
         super().__init__('LayoutComposition', prev_module)
         self._delta = delta
         self._out_size = out_size
-
 
     def run(self):
         super().run()
@@ -29,7 +37,15 @@ class LayoutComposition(Module):
         self._result = image
 
     def __process_cell(self, image, cell):
+        """Processes a single voronoi cell of the final render.
 
+        Pixels for the current cell are determined. For each pixel the corresponding image is found and
+        the pixel value of that image at that point is applied to the final render.
+
+        Args:
+            image: Image to apply changes to (numpy/cv2 image)
+            cell: Cell object to process (object)
+        """
         # Get and rescale images
         scale = cell['scale']
         images = cell['images']
@@ -59,6 +75,19 @@ class LayoutComposition(Module):
                 image[y, x] = self.__get_pixel([x,y], images[i], coordinates[i])
 
     def __nearest_circle(self, point, coordinates):
+        """Finds the closest circle to a arbitrary point in a single cell.
+
+        Since saliency radii are based on the original images' size we need to scale them
+        to fit the 0-1 region of the final image.
+        A good measure for scale was determined empirically.
+
+        Args:
+            point: Point to search from (list of ints)
+            coordinates: Coordinates of salient regions (list of lists of floats)
+
+        Returns:
+            The id of the closest circle (salient region) in coordinates
+        """
         least = -1
         least_id = -1
 
@@ -71,11 +100,30 @@ class LayoutComposition(Module):
         return least_id
 
     def __rescale_images(self, images, scale):
+        """Scales images to appropriate size for the final rendering.
+
+        Args:
+            images: List of images to rescale (list of numpy/cv2 images)
+            scale: Scale to use - determined at layout time (float)
+        """
         for i in range(len(images)):
             image_scale = scale * self._out_size
             images[i] = cv2.resize(images[i], None, fx=image_scale, fy=image_scale)
 
     def __get_pixel(self, point, image, coordinate):
+        """Gets image pixel value at a certain coordinate.
+
+        This method determines appropriate offsets and then gets the pixel value of an image a point.
+        If point lies outside the image region, a default color is returned.
+
+        Args:
+            point: Point to sample at (list of ints)
+            image: Images to sample from (numpy/cv2 image)
+            coordinate: Coordinate of salient region (list of floats)
+
+        Returns:
+            The id of the closest circle (salient region) in coordinates
+        """
         image_coordinate = np.floor(point - coordinate[3:5]).astype(np.int)
         if np.min(image_coordinate) < 0 or np.greater_equal(image_coordinate[::-1], image.shape[:2]).any():
             return (255,255,255)
@@ -89,17 +137,4 @@ class LayoutComposition(Module):
         plt.xlim((0, 1))
         plt.ylim((0, 1))
         plt.imshow(result, origin='upper', extent=[0, 1, 0, 1])
-        '''
-        for cell in self._data['cells']:
-            scale = cell['scale']
-            for i, coord in enumerate(cell['coordinates']):
-                #image = cell['images'][i]
-                #image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-                #extent = [coord[3], coord[3]+(image.shape[1]*scale), coord[4], coord[4]+(image.shape[0]*scale)]
-                #plt.imshow(image, origin='upper', extent=extent, cmap='gray')
-                ax.add_artist(plt.Circle((coord[0], coord[1]), coord[2], fill=False, color='red'))
-
-            ax.add_patch(patches.PathPatch(cell['bounding_poly'], fill=False))
-        '''
         plt.show()

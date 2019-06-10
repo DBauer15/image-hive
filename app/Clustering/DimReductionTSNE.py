@@ -4,7 +4,10 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class DimReductionTSNE(Module):
+    """Applies t-SNE dimensionality reduction to higher dimensional clustering results.
+    """
     def __init__(self, prev_module):
         super().__init__('DimReductionTSNE', prev_module)
 

@@ -4,7 +4,16 @@ import cv2
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 
+
 class FeatureClusters(Module):
+    """Applies k-means clustering to the given input features.
+
+    This class uses the feature extraction data of previous modules to partition the data into a
+    predefined number of clusters.
+
+    Attributes:
+        num_clusters: Number of clusters to split into (int)
+    """
     def __init__(self, prev_module, num_clusters):
         super().__init__('FeatureClusters', prev_module)
         self._num_clusters = num_clusters

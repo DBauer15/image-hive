@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class DimReductionPCA(Module):
+    """Applies PCA dimensionality reduction to higher dimensional clustering results.
+    """
     def __init__(self, prev_module):
         super().__init__('DimReductionPCA', prev_module)
 

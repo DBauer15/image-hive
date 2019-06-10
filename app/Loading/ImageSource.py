@@ -2,7 +2,16 @@ from app.Module import Module
 import glob
 import os.path as path
 
+
 class ImageSource(Module):
+    """Looks for image files in a given directory.
+
+    This class finds image paths in a given directory with a specific file type.
+
+    Attributes:
+        source_path: The path to the directory in which to look for images(string)
+        extension: File extension to look for (string)
+    """
     def __init__(self, source_path, extension):
         super().__init__('ImageSource', None)
         self._source_path = source_path

@@ -3,9 +3,13 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from sklearn.cluster import KMeans
+
 
 class ImageFeaturesHistogram(Module):
+    """Extracts color histogram features from given images.
+
+    This class uses the images delivered by previous modules to extract color histograms.
+    """
     def __init__(self, prev_module):
         super().__init__('ImageFeatures', prev_module)
 

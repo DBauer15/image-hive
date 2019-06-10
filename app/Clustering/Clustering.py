@@ -8,12 +8,22 @@ from app.Clustering.ClusterVoronoiTesselation import ClusterVoronoiTesselation
 
 
 class Clustering(Module):
+    """Container class for all clustering modules.
+
+    This class accumulates all clustering modules and executes them with defined settings.
+
+    Attributes:
+        num_clusters: Number of clusters to generate (int)
+        num_samples_per_cluster: Number of images to use per cluster (int)
+    """
     def __init__(self, prev_module, num_clusters, num_samples_per_cluster):
         super().__init__('1_CLUSTERING', prev_module)
         self.num_clusters = num_clusters
         self.num_samples_per_cluster = num_samples_per_cluster
 
     def run(self):
+        """Runs all clustering sub-modules.
+        """
         image_features = ImageFeaturesHistogram(self._prev_model)
         feature_clusters = FeatureClusters(image_features, num_clusters=self.num_clusters)
         cluster_size_reduction = ClusterSizeReduction(feature_clusters, num_elements_per_cluster=self.num_samples_per_cluster)

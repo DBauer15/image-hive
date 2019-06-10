@@ -1,12 +1,19 @@
 from app.Module import Module
 import numpy as np
-import cv2
 import app.tools.clipped_voronoi as clv
 from scipy.spatial import Voronoi, voronoi_plot_2d
 import matplotlib.pyplot as plt
 
 
 class ClusterVoronoiTesselation(Module):
+    """Applies Voronoi Tessellation to image clusters
+
+    This class uses the clustering result and subdivides it via Voronoi Tessellation.
+    In addition it runs CVT to evenly distribute the cells in the given space.
+
+    Attributes:
+        num_iterations: Number of iterations to use for CVT (int)
+    """
     def __init__(self, prev_module, num_iterations=15):
         super().__init__('ClusterVoronoiTesslation', prev_module)
         self._num_iterations = num_iterations
@@ -19,6 +26,12 @@ class ClusterVoronoiTesselation(Module):
         self._create_result(centroids, voronoi)
 
     def _create_result(self, centroids, voronoi):
+        """Arranges tessellation results in a new result object.
+
+        Args:
+            centroids: List of centroids of the voronoi cells (list of lists)
+            voronoi: Tessellation result (object)
+        """
         self._result = {
             'clusters': [],
             'voronoi': voronoi,

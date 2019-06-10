@@ -1,10 +1,19 @@
 from app.Module import Module
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 class ImageSaliency(Module):
+    """Calculate salient regions for images.
+
+    This class uses the results of previous modules to calculate salient regions in each image.
+    The approach is rather pragmatic:
+        - Calculate saliency map
+        - Threshold at a high value
+        - Dilate the result
+        - Fit a circle around the biggest contour
+        - Set circle center and radius as salient region
+    """
     def __init__(self, prev_module):
         super().__init__('ImageSaliency', prev_module)
 

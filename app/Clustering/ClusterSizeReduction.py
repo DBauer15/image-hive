@@ -1,7 +1,15 @@
 from app.Module import Module
 import numpy as np
 
+
 class ClusterSizeReduction(Module):
+    """Reduces number of images in a cluster.
+
+    This class reduces the number of images in a cluster to the specified amount.
+
+    Attributes:
+        num_elements_per_cluster: Number of elements per cluster to reduce to (int)
+    """
     def __init__(self, prev_module, num_elements_per_cluster):
         super().__init__('ClusterSizeReduction', prev_module)
         self.num_elements_per_cluster = num_elements_per_cluster
