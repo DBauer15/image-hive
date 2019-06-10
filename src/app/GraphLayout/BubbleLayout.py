@@ -28,7 +28,7 @@ class BubbleLayout(Module):
         for i in range(len(self._data['clusters'])):
             # Extract voronoi data and create bounding polygon for the current voronoi region
             voronoi = self._data['voronoi']
-            bounding_poly = self.__get_bounding_poly(voronoi.filtered_regions[i], voronoi.vertices)
+            bounding_poly = self.get_bounding_poly(voronoi.filtered_regions[i], voronoi.vertices)
 
             # Get the associated salient radii and assign random initial coordinates within the bounding poly
             extents = bounding_poly.get_extents()
@@ -52,7 +52,7 @@ class BubbleLayout(Module):
             c[:, 2] = radii
 
             # Simulate bubble movement
-            c = self.__simulate_force_brownian(c, bounding_poly, 200, True)
+            c = self.simulate_force_brownian(c, bounding_poly, 200, True)
 
             # Insert image origins
             c[:, 3:5] = c[:, 0:2] - local_centers
@@ -65,7 +65,7 @@ class BubbleLayout(Module):
                 'scale': scale
             })
 
-    def __get_scale(self, bounding_poly, radii):
+    def get_scale(self, bounding_poly, radii):
         """Calculates a scaling factor for saliency regions.
 
         Since saliency radii are based on the original images' size we need to scale them
@@ -87,7 +87,7 @@ class BubbleLayout(Module):
 
         return scale
 
-    def __get_bounding_poly(self, region, vertices):
+    def get_bounding_poly(self, region, vertices):
         """Creates a bounding polygon from a region definition and a list of corresponding vertices.
 
         Results from the Voronoi Tessellation need to be transformed into polygons to ease the check of
@@ -107,7 +107,7 @@ class BubbleLayout(Module):
 
         return path.Path(vertex_list, closed=True)
 
-    def __get_bounding_forces(self, c, p):
+    def get_bounding_forces(self, c, p):
         """Calculates forces around the bounding polygon of the region
 
         During brownian simulation, regions may bounce against the bounds of the region.
@@ -131,7 +131,7 @@ class BubbleLayout(Module):
                     f[1] += (c[1] - point[1]) * 0.15
         return f
 
-    def __get_forces(self, c, bounding_poly, brownian):
+    def get_forces(self, c, bounding_poly, brownian):
         """Calculates forces resulting from saliency region interactions
 
         During brownian simulation, regions may bounce against each other of may overlap each other.
@@ -156,7 +156,7 @@ class BubbleLayout(Module):
                 x0 = (np.random.sample() * 2 - 1) * 0.01
                 y0 = (np.random.sample() * 2 - 1) * 0.01
             f.append([x0, y0])
-            f_bounding = self.__get_bounding_forces(c[i, :], bounding_poly)
+            f_bounding = self.get_bounding_forces(c[i, :], bounding_poly)
             f[i][0] += f_bounding[0]
             f[i][1] += f_bounding[1]
             for j in range(len(c)):
@@ -173,7 +173,7 @@ class BubbleLayout(Module):
                     f[i][1] = f[i][1] + (c[i, 1] - c[j, 1]) * 0.005
         return f
 
-    def __apply_forces(self, c, f):
+    def apply_forces(self, c, f):
         """Applies forces
 
         This methods applies linear force to each salient region in c.
@@ -190,7 +190,7 @@ class BubbleLayout(Module):
             c[i, 1] += f[i][1]
         return c
 
-    def __simulate_force_brownian(self, c, bounding_poly, max_its, brownian):
+    def simulate_force_brownian(self, c, bounding_poly, max_its, brownian):
         """Simulates brownian movement with particle interactions.
 
         Args:
@@ -202,14 +202,14 @@ class BubbleLayout(Module):
         Returns:
             Resulting list of coordinates after simulation (list of lists of floats)
         """
-        f = self.__get_forces(c, bounding_poly, brownian)
+        f = self.get_forces(c, bounding_poly, brownian)
         i = 0
 
         ret = np.copy(c)
 
         while np.sum(np.abs(f)) > 0 and i < max_its:
-            ret = self.__apply_forces(ret, f)
-            f = self.__get_forces(ret, bounding_poly, brownian)
+            ret = self.apply_forces(ret, f)
+            f = self.get_forces(ret, bounding_poly, brownian)
             i += 1
 
         return ret

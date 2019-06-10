@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.6.2" />
+<title>src.app.GraphLayout.BubbleLayout API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase;cursor:pointer}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>src.app.GraphLayout.BubbleLayout</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">from src.app.Module import Module
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.path as path
+import matplotlib.patches as patches
+
+
+class BubbleLayout(Module):
+    &#34;&#34;&#34;Distributes salient regions of images evenly within the available space for each voronoi cell.
+
+    This class uses the saliency result of previous modules to evenly distribute those regions inside a polygon.
+    It uses brownian motion in combination with repulsion forces to achieve a aesthetically satisfying distribution.
+
+    Attributes:
+        _delta: Delta margin to add to saliency regions (float)
+    &#34;&#34;&#34;
+    def __init__(self, prev_module, delta=0.05):
+        super().__init__(&#39;BubbleLayout&#39;, prev_module)
+        self._delta = delta
+
+    def run(self):
+        super().run()
+
+        self._result = {
+            &#39;cells&#39;: []
+        }
+
+        for i in range(len(self._data[&#39;clusters&#39;])):
+            # Extract voronoi data and create bounding polygon for the current voronoi region
+            voronoi = self._data[&#39;voronoi&#39;]
+            bounding_poly = self.get_bounding_poly(voronoi.filtered_regions[i], voronoi.vertices)
+
+            # Get the associated salient radii and assign random initial coordinates within the bounding poly
+            extents = bounding_poly.get_extents()
+            extx = (extents.xmax - extents.xmin)
+            exty = (extents.ymax - extents.ymin)
+            xmid = (extents.xmin + extents.xmax) / 2
+            ymid = (extents.ymin + extents.ymax) / 2
+
+            radii = np.array([s[&#39;r&#39;] for s in self._data[&#39;clusters&#39;][i][&#39;saliencies&#39;]], dtype=np.float)
+            local_centers = np.array([s[&#39;c&#39;] for s in self._data[&#39;clusters&#39;][i][&#39;saliencies&#39;]], dtype=np.float)
+            scale = 1 * (len(self._data[&#39;clusters&#39;])/3) * ((extx*exty)/(len(radii)*np.mean(radii+self._delta)))
+            #scale = self.__get_scale(bounding_poly, radii)
+            radii *= scale
+            local_centers *= scale
+
+
+            # Assign random starting coordinates and insert radii
+            c = 2*np.random.sample((len(radii), 5)) - 1
+            c[:, 0] = xmid + c[:, 0]*(extx/10)
+            c[:, 1] = ymid + c[:, 1]*(exty/10)
+            c[:, 2] = radii
+
+            # Simulate bubble movement
+            c = self.simulate_force_brownian(c, bounding_poly, 200, True)
+
+            # Insert image origins
+            c[:, 3:5] = c[:, 0:2] - local_centers
+
+            # Create new entry for the result
+            self._result[&#39;cells&#39;].append({
+                &#39;images&#39;: self._data[&#39;clusters&#39;][i][&#39;images&#39;],
+                &#39;bounding_poly&#39;: bounding_poly,
+                &#39;coordinates&#39;: c,
+                &#39;scale&#39;: scale
+            })
+
+    def get_scale(self, bounding_poly, radii):
+        &#34;&#34;&#34;Calculates a scaling factor for saliency regions.
+
+        Since saliency radii are based on the original images&#39; size we need to scale them
+        to fit the 0-1 region of the final image.
+        A good measure for scale was determined empirically.
+
+        Args:
+            bounding_poly: Polygon to restrain the regions to (matplotlib path)
+            radii: List of original radii to scale (list of ints)
+
+        Returns:
+            The scale to apply to saliency regions and to scale images later on
+        &#34;&#34;&#34;
+        mean_circ_area = np.mean(radii*radii*np.pi)
+
+        extents = bounding_poly.get_extents()
+        bounding_area = (extents.xmax - extents.xmin) * (extents.ymax - extents.ymin)
+        scale = (bounding_area) / (mean_circ_area/len(radii))
+
+        return scale
+
+    def get_bounding_poly(self, region, vertices):
+        &#34;&#34;&#34;Creates a bounding polygon from a region definition and a list of corresponding vertices.
+
+        Results from the Voronoi Tessellation need to be transformed into polygons to ease the check of
+        inliers and perform more efficient force calculation.
+
+        Args:
+            region: Region definition returned by the Voronoi Tessellation (scipy voronoi region)
+            vertices: List of (corresponding) vertices (list of lists)
+
+        Returns:
+            A matplotlib path object representing the given region
+        &#34;&#34;&#34;
+        vertex_list = []
+        for i in region:
+            vertex_list.append(vertices[i])
+        vertex_list.append(vertices[region[0]])
+
+        return path.Path(vertex_list, closed=True)
+
+    def get_bounding_forces(self, c, p):
+        &#34;&#34;&#34;Calculates forces around the bounding polygon of the region
+
+        During brownian simulation, regions may bounce against the bounds of the region.
+        This method calculates repulsion forces that can be applied to move saliencies back inwards.
+
+        Args:
+            c: Coordinates which contain saliency centers, radii and image origins (list of floats)
+            p: Bounding polygon (matplotlib path)
+
+        Returns:
+            A vector f containing x and y forces resulting from boundary collisions
+        &#34;&#34;&#34;
+        f = [0.0, 0.0]
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                point = np.copy(c[:2])
+                point[0] += i * (c[2] + self._delta)
+                point[1] += j * (c[2] + self._delta)
+                if not p.contains_point(point):
+                    f[0] += (c[0] - point[0]) * 0.15
+                    f[1] += (c[1] - point[1]) * 0.15
+        return f
+
+    def get_forces(self, c, bounding_poly, brownian):
+        &#34;&#34;&#34;Calculates forces resulting from saliency region interactions
+
+        During brownian simulation, regions may bounce against each other of may overlap each other.
+        This method calculates repulsion forces that can be applied to move saliencies apart from each other.
+        It also applies a slight outward drift so that salient regions will accumlate around the edges of the region.
+        This ensures better visibility in the final image.
+
+        Args:
+            c: List of coordinates which contain saliency centers, radii and image origins (list of lists of floats)
+            bounding_poly: Bounding polygon (matplotlib path)
+            brownian: Boolean determining if brownian motion should be applied (boolean)
+
+        Returns:
+            A vector f containing x and y forces resulting from collisions and interactions
+        &#34;&#34;&#34;
+        f = []
+
+        for i in range(len(c)):
+            x0 = 0.0
+            y0 = 0.0
+            if brownian:
+                x0 = (np.random.sample() * 2 - 1) * 0.01
+                y0 = (np.random.sample() * 2 - 1) * 0.01
+            f.append([x0, y0])
+            f_bounding = self.get_bounding_forces(c[i, :], bounding_poly)
+            f[i][0] += f_bounding[0]
+            f[i][1] += f_bounding[1]
+            for j in range(len(c)):
+                if i == j:
+                    continue
+
+                dist = np.linalg.norm(c[i, :2] - c[j, :2])
+                rad = (c[i, 2] + self._delta) + (c[j, 2] + self._delta)
+                if dist &lt; rad:
+                    f[i][0] = f[i][0] + (c[i, 0] - c[j, 0]) * 0.15
+                    f[i][1] = f[i][1] + (c[i, 1] - c[j, 1]) * 0.15
+                else:
+                    f[i][0] = f[i][0] + (c[i, 0] - c[j, 0]) * 0.005
+                    f[i][1] = f[i][1] + (c[i, 1] - c[j, 1]) * 0.005
+        return f
+
+    def apply_forces(self, c, f):
+        &#34;&#34;&#34;Applies forces
+
+        This methods applies linear force to each salient region in c.
+
+        Args:
+            c: List of coordinates which contain saliency centers, radii and image origins (list of lists of floats)
+            f: Forces to apply (list of lists of floats)
+
+        Returns:
+            Resulting list of coordinates after force application (list of lists of floats)
+        &#34;&#34;&#34;
+        for i in range(len(c)):
+            c[i, 0] += f[i][0]
+            c[i, 1] += f[i][1]
+        return c
+
+    def simulate_force_brownian(self, c, bounding_poly, max_its, brownian):
+        &#34;&#34;&#34;Simulates brownian movement with particle interactions.
+
+        Args:
+            c: List of initial coordinates (which should lie within the bounding_poly) which contain saliency centers, radii and image origins (list of lists of floats)
+            bounding_poly: Bounding polygon (matplotlib path)
+            brownian: Boolean determining if brownian motion should be applied (boolean)
+            max_its: Maximum number of iterations for simulation
+
+        Returns:
+            Resulting list of coordinates after simulation (list of lists of floats)
+        &#34;&#34;&#34;
+        f = self.get_forces(c, bounding_poly, brownian)
+        i = 0
+
+        ret = np.copy(c)
+
+        while np.sum(np.abs(f)) &gt; 0 and i &lt; max_its:
+            ret = self.apply_forces(ret, f)
+            f = self.get_forces(ret, bounding_poly, brownian)
+            i += 1
+
+        return ret
+
+    def visualize(self):
+        result = self.get_module_results()
+
+        fig, ax = plt.subplots()
+        for cell in result[&#39;cells&#39;]:
+            ax.add_patch(patches.PathPatch(cell[&#39;bounding_poly&#39;], fill=False))
+            for coord in cell[&#39;coordinates&#39;]:
+                ax.add_artist(plt.Circle((coord[0], coord[1]), coord[2], fill=False))
+                ax.add_artist(plt.Circle((coord[0], coord[1]), coord[2] + self._delta, linestyle=&#39;--&#39;, fill=False))
+        plt.show()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="src.app.GraphLayout.BubbleLayout.BubbleLayout"><code class="flex name class">
+<span>class <span class="ident">BubbleLayout</span></span>
+<span>(</span><span>prev_module, delta=0.05)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Distributes salient regions of images evenly within the available space for each voronoi cell.</p>
+<p>This class uses the saliency result of previous modules to evenly distribute those regions inside a polygon.
+It uses brownian motion in combination with repulsion forces to achieve a aesthetically satisfying distribution.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>_delta</code></strong></dt>
+<dd>Delta margin to add to saliency regions (float)</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">class BubbleLayout(Module):
+    &#34;&#34;&#34;Distributes salient regions of images evenly within the available space for each voronoi cell.
+
+    This class uses the saliency result of previous modules to evenly distribute those regions inside a polygon.
+    It uses brownian motion in combination with repulsion forces to achieve a aesthetically satisfying distribution.
+
+    Attributes:
+        _delta: Delta margin to add to saliency regions (float)
+    &#34;&#34;&#34;
+    def __init__(self, prev_module, delta=0.05):
+        super().__init__(&#39;BubbleLayout&#39;, prev_module)
+        self._delta = delta
+
+    def run(self):
+        super().run()
+
+        self._result = {
+            &#39;cells&#39;: []
+        }
+
+        for i in range(len(self._data[&#39;clusters&#39;])):
+            # Extract voronoi data and create bounding polygon for the current voronoi region
+            voronoi = self._data[&#39;voronoi&#39;]
+            bounding_poly = self.get_bounding_poly(voronoi.filtered_regions[i], voronoi.vertices)
+
+            # Get the associated salient radii and assign random initial coordinates within the bounding poly
+            extents = bounding_poly.get_extents()
+            extx = (extents.xmax - extents.xmin)
+            exty = (extents.ymax - extents.ymin)
+            xmid = (extents.xmin + extents.xmax) / 2
+            ymid = (extents.ymin + extents.ymax) / 2
+
+            radii = np.array([s[&#39;r&#39;] for s in self._data[&#39;clusters&#39;][i][&#39;saliencies&#39;]], dtype=np.float)
+            local_centers = np.array([s[&#39;c&#39;] for s in self._data[&#39;clusters&#39;][i][&#39;saliencies&#39;]], dtype=np.float)
+            scale = 1 * (len(self._data[&#39;clusters&#39;])/3) * ((extx*exty)/(len(radii)*np.mean(radii+self._delta)))
+            #scale = self.__get_scale(bounding_poly, radii)
+            radii *= scale
+            local_centers *= scale
+
+
+            # Assign random starting coordinates and insert radii
+            c = 2*np.random.sample((len(radii), 5)) - 1
+            c[:, 0] = xmid + c[:, 0]*(extx/10)
+            c[:, 1] = ymid + c[:, 1]*(exty/10)
+            c[:, 2] = radii
+
+            # Simulate bubble movement
+            c = self.simulate_force_brownian(c, bounding_poly, 200, True)
+
+            # Insert image origins
+            c[:, 3:5] = c[:, 0:2] - local_centers
+
+            # Create new entry for the result
+            self._result[&#39;cells&#39;].append({
+                &#39;images&#39;: self._data[&#39;clusters&#39;][i][&#39;images&#39;],
+                &#39;bounding_poly&#39;: bounding_poly,
+                &#39;coordinates&#39;: c,
+                &#39;scale&#39;: scale
+            })
+
+    def get_scale(self, bounding_poly, radii):
+        &#34;&#34;&#34;Calculates a scaling factor for saliency regions.
+
+        Since saliency radii are based on the original images&#39; size we need to scale them
+        to fit the 0-1 region of the final image.
+        A good measure for scale was determined empirically.
+
+        Args:
+            bounding_poly: Polygon to restrain the regions to (matplotlib path)
+            radii: List of original radii to scale (list of ints)
+
+        Returns:
+            The scale to apply to saliency regions and to scale images later on
+        &#34;&#34;&#34;
+        mean_circ_area = np.mean(radii*radii*np.pi)
+
+        extents = bounding_poly.get_extents()
+        bounding_area = (extents.xmax - extents.xmin) * (extents.ymax - extents.ymin)
+        scale = (bounding_area) / (mean_circ_area/len(radii))
+
+        return scale
+
+    def get_bounding_poly(self, region, vertices):
+        &#34;&#34;&#34;Creates a bounding polygon from a region definition and a list of corresponding vertices.
+
+        Results from the Voronoi Tessellation need to be transformed into polygons to ease the check of
+        inliers and perform more efficient force calculation.
+
+        Args:
+            region: Region definition returned by the Voronoi Tessellation (scipy voronoi region)
+            vertices: List of (corresponding) vertices (list of lists)
+
+        Returns:
+            A matplotlib path object representing the given region
+        &#34;&#34;&#34;
+        vertex_list = []
+        for i in region:
+            vertex_list.append(vertices[i])
+        vertex_list.append(vertices[region[0]])
+
+        return path.Path(vertex_list, closed=True)
+
+    def get_bounding_forces(self, c, p):
+        &#34;&#34;&#34;Calculates forces around the bounding polygon of the region
+
+        During brownian simulation, regions may bounce against the bounds of the region.
+        This method calculates repulsion forces that can be applied to move saliencies back inwards.
+
+        Args:
+            c: Coordinates which contain saliency centers, radii and image origins (list of floats)
+            p: Bounding polygon (matplotlib path)
+
+        Returns:
+            A vector f containing x and y forces resulting from boundary collisions
+        &#34;&#34;&#34;
+        f = [0.0, 0.0]
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                point = np.copy(c[:2])
+                point[0] += i * (c[2] + self._delta)
+                point[1] += j * (c[2] + self._delta)
+                if not p.contains_point(point):
+                    f[0] += (c[0] - point[0]) * 0.15
+                    f[1] += (c[1] - point[1]) * 0.15
+        return f
+
+    def get_forces(self, c, bounding_poly, brownian):
+        &#34;&#34;&#34;Calculates forces resulting from saliency region interactions
+
+        During brownian simulation, regions may bounce against each other of may overlap each other.
+        This method calculates repulsion forces that can be applied to move saliencies apart from each other.
+        It also applies a slight outward drift so that salient regions will accumlate around the edges of the region.
+        This ensures better visibility in the final image.
+
+        Args:
+            c: List of coordinates which contain saliency centers, radii and image origins (list of lists of floats)
+            bounding_poly: Bounding polygon (matplotlib path)
+            brownian: Boolean determining if brownian motion should be applied (boolean)
+
+        Returns:
+            A vector f containing x and y forces resulting from collisions and interactions
+        &#34;&#34;&#34;
+        f = []
+
+        for i in range(len(c)):
+            x0 = 0.0
+            y0 = 0.0
+            if brownian:
+                x0 = (np.random.sample() * 2 - 1) * 0.01
+                y0 = (np.random.sample() * 2 - 1) * 0.01
+            f.append([x0, y0])
+            f_bounding = self.get_bounding_forces(c[i, :], bounding_poly)
+            f[i][0] += f_bounding[0]
+            f[i][1] += f_bounding[1]
+            for j in range(len(c)):
+                if i == j:
+                    continue
+
+                dist = np.linalg.norm(c[i, :2] - c[j, :2])
+                rad = (c[i, 2] + self._delta) + (c[j, 2] + self._delta)
+                if dist &lt; rad:
+                    f[i][0] = f[i][0] + (c[i, 0] - c[j, 0]) * 0.15
+                    f[i][1] = f[i][1] + (c[i, 1] - c[j, 1]) * 0.15
+                else:
+                    f[i][0] = f[i][0] + (c[i, 0] - c[j, 0]) * 0.005
+                    f[i][1] = f[i][1] + (c[i, 1] - c[j, 1]) * 0.005
+        return f
+
+    def apply_forces(self, c, f):
+        &#34;&#34;&#34;Applies forces
+
+        This methods applies linear force to each salient region in c.
+
+        Args:
+            c: List of coordinates which contain saliency centers, radii and image origins (list of lists of floats)
+            f: Forces to apply (list of lists of floats)
+
+        Returns:
+            Resulting list of coordinates after force application (list of lists of floats)
+        &#34;&#34;&#34;
+        for i in range(len(c)):
+            c[i, 0] += f[i][0]
+            c[i, 1] += f[i][1]
+        return c
+
+    def simulate_force_brownian(self, c, bounding_poly, max_its, brownian):
+        &#34;&#34;&#34;Simulates brownian movement with particle interactions.
+
+        Args:
+            c: List of initial coordinates (which should lie within the bounding_poly) which contain saliency centers, radii and image origins (list of lists of floats)
+            bounding_poly: Bounding polygon (matplotlib path)
+            brownian: Boolean determining if brownian motion should be applied (boolean)
+            max_its: Maximum number of iterations for simulation
+
+        Returns:
+            Resulting list of coordinates after simulation (list of lists of floats)
+        &#34;&#34;&#34;
+        f = self.get_forces(c, bounding_poly, brownian)
+        i = 0
+
+        ret = np.copy(c)
+
+        while np.sum(np.abs(f)) &gt; 0 and i &lt; max_its:
+            ret = self.apply_forces(ret, f)
+            f = self.get_forces(ret, bounding_poly, brownian)
+            i += 1
+
+        return ret
+
+    def visualize(self):
+        result = self.get_module_results()
+
+        fig, ax = plt.subplots()
+        for cell in result[&#39;cells&#39;]:
+            ax.add_patch(patches.PathPatch(cell[&#39;bounding_poly&#39;], fill=False))
+            for coord in cell[&#39;coordinates&#39;]:
+                ax.add_artist(plt.Circle((coord[0], coord[1]), coord[2], fill=False))
+                ax.add_artist(plt.Circle((coord[0], coord[1]), coord[2] + self._delta, linestyle=&#39;--&#39;, fill=False))
+        plt.show()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="src.app.Module.Module" href="../Module.html#src.app.Module.Module">Module</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="src.app.GraphLayout.BubbleLayout.BubbleLayout.apply_forces"><code class="name flex">
+<span>def <span class="ident">apply_forces</span></span>(<span>self, c, f)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Applies forces</p>
+<p>This methods applies linear force to each salient region in c.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>c</code></strong></dt>
+<dd>List of coordinates which contain saliency centers, radii and image origins (list of lists of floats)</dd>
+<dt><strong><code>f</code></strong></dt>
+<dd>Forces to apply (list of lists of floats)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Resulting</code> <code>list</code> of <code>coordinates</code> <code>after</code> <code>force</code> <code>application</code> (<code>list</code> of <code>lists</code> of <code>floats</code>)</dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def apply_forces(self, c, f):
+    &#34;&#34;&#34;Applies forces
+
+    This methods applies linear force to each salient region in c.
+
+    Args:
+        c: List of coordinates which contain saliency centers, radii and image origins (list of lists of floats)
+        f: Forces to apply (list of lists of floats)
+
+    Returns:
+        Resulting list of coordinates after force application (list of lists of floats)
+    &#34;&#34;&#34;
+    for i in range(len(c)):
+        c[i, 0] += f[i][0]
+        c[i, 1] += f[i][1]
+    return c</code></pre>
+</details>
+</dd>
+<dt id="src.app.GraphLayout.BubbleLayout.BubbleLayout.get_bounding_forces"><code class="name flex">
+<span>def <span class="ident">get_bounding_forces</span></span>(<span>self, c, p)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates forces around the bounding polygon of the region</p>
+<p>During brownian simulation, regions may bounce against the bounds of the region.
+This method calculates repulsion forces that can be applied to move saliencies back inwards.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>c</code></strong></dt>
+<dd>Coordinates which contain saliency centers, radii and image origins (list of floats)</dd>
+<dt><strong><code>p</code></strong></dt>
+<dd>Bounding polygon (matplotlib path)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A</code> <code>vector</code> <code>f</code> <code>containing</code> <code>x</code> <code>and</code> <code>y</code> <code>forces</code> <code>resulting</code> <code>from</code> <code>boundary</code> <code>collisions</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_bounding_forces(self, c, p):
+    &#34;&#34;&#34;Calculates forces around the bounding polygon of the region
+
+    During brownian simulation, regions may bounce against the bounds of the region.
+    This method calculates repulsion forces that can be applied to move saliencies back inwards.
+
+    Args:
+        c: Coordinates which contain saliency centers, radii and image origins (list of floats)
+        p: Bounding polygon (matplotlib path)
+
+    Returns:
+        A vector f containing x and y forces resulting from boundary collisions
+    &#34;&#34;&#34;
+    f = [0.0, 0.0]
+    for i in range(-1, 2):
+        for j in range(-1, 2):
+            point = np.copy(c[:2])
+            point[0] += i * (c[2] + self._delta)
+            point[1] += j * (c[2] + self._delta)
+            if not p.contains_point(point):
+                f[0] += (c[0] - point[0]) * 0.15
+                f[1] += (c[1] - point[1]) * 0.15
+    return f</code></pre>
+</details>
+</dd>
+<dt id="src.app.GraphLayout.BubbleLayout.BubbleLayout.get_bounding_poly"><code class="name flex">
+<span>def <span class="ident">get_bounding_poly</span></span>(<span>self, region, vertices)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Creates a bounding polygon from a region definition and a list of corresponding vertices.</p>
+<p>Results from the Voronoi Tessellation need to be transformed into polygons to ease the check of
+inliers and perform more efficient force calculation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>region</code></strong></dt>
+<dd>Region definition returned by the Voronoi Tessellation (scipy voronoi region)</dd>
+<dt><strong><code>vertices</code></strong></dt>
+<dd>List of (corresponding) vertices (list of lists)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A</code> <code>matplotlib</code> <code>path</code> <code>object</code> <code>representing</code> <code>the</code> <code>given</code> <code>region</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_bounding_poly(self, region, vertices):
+    &#34;&#34;&#34;Creates a bounding polygon from a region definition and a list of corresponding vertices.
+
+    Results from the Voronoi Tessellation need to be transformed into polygons to ease the check of
+    inliers and perform more efficient force calculation.
+
+    Args:
+        region: Region definition returned by the Voronoi Tessellation (scipy voronoi region)
+        vertices: List of (corresponding) vertices (list of lists)
+
+    Returns:
+        A matplotlib path object representing the given region
+    &#34;&#34;&#34;
+    vertex_list = []
+    for i in region:
+        vertex_list.append(vertices[i])
+    vertex_list.append(vertices[region[0]])
+
+    return path.Path(vertex_list, closed=True)</code></pre>
+</details>
+</dd>
+<dt id="src.app.GraphLayout.BubbleLayout.BubbleLayout.get_forces"><code class="name flex">
+<span>def <span class="ident">get_forces</span></span>(<span>self, c, bounding_poly, brownian)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates forces resulting from saliency region interactions</p>
+<p>During brownian simulation, regions may bounce against each other of may overlap each other.
+This method calculates repulsion forces that can be applied to move saliencies apart from each other.
+It also applies a slight outward drift so that salient regions will accumlate around the edges of the region.
+This ensures better visibility in the final image.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>c</code></strong></dt>
+<dd>List of coordinates which contain saliency centers, radii and image origins (list of lists of floats)</dd>
+<dt><strong><code>bounding_poly</code></strong></dt>
+<dd>Bounding polygon (matplotlib path)</dd>
+<dt><strong><code>brownian</code></strong></dt>
+<dd>Boolean determining if brownian motion should be applied (boolean)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>A</code> <code>vector</code> <code>f</code> <code>containing</code> <code>x</code> <code>and</code> <code>y</code> <code>forces</code> <code>resulting</code> <code>from</code> <code>collisions</code> <code>and</code> <code>interactions</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_forces(self, c, bounding_poly, brownian):
+    &#34;&#34;&#34;Calculates forces resulting from saliency region interactions
+
+    During brownian simulation, regions may bounce against each other of may overlap each other.
+    This method calculates repulsion forces that can be applied to move saliencies apart from each other.
+    It also applies a slight outward drift so that salient regions will accumlate around the edges of the region.
+    This ensures better visibility in the final image.
+
+    Args:
+        c: List of coordinates which contain saliency centers, radii and image origins (list of lists of floats)
+        bounding_poly: Bounding polygon (matplotlib path)
+        brownian: Boolean determining if brownian motion should be applied (boolean)
+
+    Returns:
+        A vector f containing x and y forces resulting from collisions and interactions
+    &#34;&#34;&#34;
+    f = []
+
+    for i in range(len(c)):
+        x0 = 0.0
+        y0 = 0.0
+        if brownian:
+            x0 = (np.random.sample() * 2 - 1) * 0.01
+            y0 = (np.random.sample() * 2 - 1) * 0.01
+        f.append([x0, y0])
+        f_bounding = self.get_bounding_forces(c[i, :], bounding_poly)
+        f[i][0] += f_bounding[0]
+        f[i][1] += f_bounding[1]
+        for j in range(len(c)):
+            if i == j:
+                continue
+
+            dist = np.linalg.norm(c[i, :2] - c[j, :2])
+            rad = (c[i, 2] + self._delta) + (c[j, 2] + self._delta)
+            if dist &lt; rad:
+                f[i][0] = f[i][0] + (c[i, 0] - c[j, 0]) * 0.15
+                f[i][1] = f[i][1] + (c[i, 1] - c[j, 1]) * 0.15
+            else:
+                f[i][0] = f[i][0] + (c[i, 0] - c[j, 0]) * 0.005
+                f[i][1] = f[i][1] + (c[i, 1] - c[j, 1]) * 0.005
+    return f</code></pre>
+</details>
+</dd>
+<dt id="src.app.GraphLayout.BubbleLayout.BubbleLayout.get_scale"><code class="name flex">
+<span>def <span class="ident">get_scale</span></span>(<span>self, bounding_poly, radii)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Calculates a scaling factor for saliency regions.</p>
+<p>Since saliency radii are based on the original images' size we need to scale them
+to fit the 0-1 region of the final image.
+A good measure for scale was determined empirically.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>bounding_poly</code></strong></dt>
+<dd>Polygon to restrain the regions to (matplotlib path)</dd>
+<dt><strong><code>radii</code></strong></dt>
+<dd>List of original radii to scale (list of ints)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>The</code> <code>scale</code> <code>to</code> <code>apply</code> <code>to</code> <code>saliency</code> <code>regions</code> <code>and</code> <code>to</code> <code>scale</code> <code>images</code> <code>later</code> <code>on</code></dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def get_scale(self, bounding_poly, radii):
+    &#34;&#34;&#34;Calculates a scaling factor for saliency regions.
+
+    Since saliency radii are based on the original images&#39; size we need to scale them
+    to fit the 0-1 region of the final image.
+    A good measure for scale was determined empirically.
+
+    Args:
+        bounding_poly: Polygon to restrain the regions to (matplotlib path)
+        radii: List of original radii to scale (list of ints)
+
+    Returns:
+        The scale to apply to saliency regions and to scale images later on
+    &#34;&#34;&#34;
+    mean_circ_area = np.mean(radii*radii*np.pi)
+
+    extents = bounding_poly.get_extents()
+    bounding_area = (extents.xmax - extents.xmin) * (extents.ymax - extents.ymin)
+    scale = (bounding_area) / (mean_circ_area/len(radii))
+
+    return scale</code></pre>
+</details>
+</dd>
+<dt id="src.app.GraphLayout.BubbleLayout.BubbleLayout.simulate_force_brownian"><code class="name flex">
+<span>def <span class="ident">simulate_force_brownian</span></span>(<span>self, c, bounding_poly, max_its, brownian)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Simulates brownian movement with particle interactions.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>c</code></strong></dt>
+<dd>List of initial coordinates (which should lie within the bounding_poly) which contain saliency centers, radii and image origins (list of lists of floats)</dd>
+<dt><strong><code>bounding_poly</code></strong></dt>
+<dd>Bounding polygon (matplotlib path)</dd>
+<dt><strong><code>brownian</code></strong></dt>
+<dd>Boolean determining if brownian motion should be applied (boolean)</dd>
+<dt><strong><code>max_its</code></strong></dt>
+<dd>Maximum number of iterations for simulation</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Resulting</code> <code>list</code> of <code>coordinates</code> <code>after</code> <code>simulation</code> (<code>list</code> of <code>lists</code> of <code>floats</code>)</dt>
+<dd>&nbsp;</dd>
+</dl></section>
+<details class="source">
+<summary>Source code</summary>
+<pre><code class="python">def simulate_force_brownian(self, c, bounding_poly, max_its, brownian):
+    &#34;&#34;&#34;Simulates brownian movement with particle interactions.
+
+    Args:
+        c: List of initial coordinates (which should lie within the bounding_poly) which contain saliency centers, radii and image origins (list of lists of floats)
+        bounding_poly: Bounding polygon (matplotlib path)
+        brownian: Boolean determining if brownian motion should be applied (boolean)
+        max_its: Maximum number of iterations for simulation
+
+    Returns:
+        Resulting list of coordinates after simulation (list of lists of floats)
+    &#34;&#34;&#34;
+    f = self.get_forces(c, bounding_poly, brownian)
+    i = 0
+
+    ret = np.copy(c)
+
+    while np.sum(np.abs(f)) &gt; 0 and i &lt; max_its:
+        ret = self.apply_forces(ret, f)
+        f = self.get_forces(ret, bounding_poly, brownian)
+        i += 1
+
+    return ret</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="src.app.Module.Module" href="../Module.html#src.app.Module.Module">Module</a></b></code>:
+<ul class="hlist">
+<li><code><a title="src.app.Module.Module.get_module_results" href="../Module.html#src.app.Module.Module.get_module_results">get_module_results</a></code></li>
+<li><code><a title="src.app.Module.Module.run" href="../Module.html#src.app.Module.Module.run">run</a></code></li>
+<li><code><a title="src.app.Module.Module.visualize" href="../Module.html#src.app.Module.Module.visualize">visualize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="src.app.GraphLayout" href="index.html">src.app.GraphLayout</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="src.app.GraphLayout.BubbleLayout.BubbleLayout" href="#src.app.GraphLayout.BubbleLayout.BubbleLayout">BubbleLayout</a></code></h4>
+<ul class="">
+<li><code><a title="src.app.GraphLayout.BubbleLayout.BubbleLayout.apply_forces" href="#src.app.GraphLayout.BubbleLayout.BubbleLayout.apply_forces">apply_forces</a></code></li>
+<li><code><a title="src.app.GraphLayout.BubbleLayout.BubbleLayout.get_bounding_forces" href="#src.app.GraphLayout.BubbleLayout.BubbleLayout.get_bounding_forces">get_bounding_forces</a></code></li>
+<li><code><a title="src.app.GraphLayout.BubbleLayout.BubbleLayout.get_bounding_poly" href="#src.app.GraphLayout.BubbleLayout.BubbleLayout.get_bounding_poly">get_bounding_poly</a></code></li>
+<li><code><a title="src.app.GraphLayout.BubbleLayout.BubbleLayout.get_forces" href="#src.app.GraphLayout.BubbleLayout.BubbleLayout.get_forces">get_forces</a></code></li>
+<li><code><a title="src.app.GraphLayout.BubbleLayout.BubbleLayout.get_scale" href="#src.app.GraphLayout.BubbleLayout.BubbleLayout.get_scale">get_scale</a></code></li>
+<li><code><a title="src.app.GraphLayout.BubbleLayout.BubbleLayout.simulate_force_brownian" href="#src.app.GraphLayout.BubbleLayout.BubbleLayout.simulate_force_brownian">simulate_force_brownian</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.6.2</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

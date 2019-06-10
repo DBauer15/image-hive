@@ -1,4 +1,5 @@
 '''
+This class was borrowed from a StackOverflow post.
 COPYRIGHT by Flabetvibes (https://stackoverflow.com/users/2225883/flabetvibes)
 Source: https://stackoverflow.com/questions/28665491/getting-a-bounded-polygon-coordinates-from-voronoi-cells
 '''

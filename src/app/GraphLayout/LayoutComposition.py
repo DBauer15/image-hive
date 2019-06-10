@@ -29,14 +29,14 @@ class LayoutComposition(Module):
         num_cells = len(self._data['cells'])
         print('0 of {} cells rendered'.format(num_cells))
         for i, cell in enumerate(self._data['cells']):
-            self.__process_cell(image, cell)
+            self.process_cell(image, cell)
             print('{} of {} cells rendered'.format(i+1, num_cells))
 
 
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         self._result = image
 
-    def __process_cell(self, image, cell):
+    def process_cell(self, image, cell):
         """Processes a single voronoi cell of the final render.
 
         Pixels for the current cell are determined. For each pixel the corresponding image is found and
@@ -49,7 +49,7 @@ class LayoutComposition(Module):
         # Get and rescale images
         scale = cell['scale']
         images = cell['images']
-        self.__rescale_images(images, scale)
+        self.rescale_images(images, scale)
 
         # Get and rescale coordinates and bounding polygon
         coordinates = cell['coordinates'] * self._out_size
@@ -69,12 +69,12 @@ class LayoutComposition(Module):
                     continue
 
                 # Find the closest circle
-                i = self.__nearest_circle([x,y], coordinates)
+                i = self.nearest_circle([x, y], coordinates)
 
                 # Get the pixel color of the corresponding image
-                image[y, x] = self.__get_pixel([x,y], images[i], coordinates[i])
+                image[y, x] = self.get_pixel([x, y], images[i], coordinates[i])
 
-    def __nearest_circle(self, point, coordinates):
+    def nearest_circle(self, point, coordinates):
         """Finds the closest circle to a arbitrary point in a single cell.
 
         Since saliency radii are based on the original images' size we need to scale them
@@ -99,7 +99,7 @@ class LayoutComposition(Module):
 
         return least_id
 
-    def __rescale_images(self, images, scale):
+    def rescale_images(self, images, scale):
         """Scales images to appropriate size for the final rendering.
 
         Args:
@@ -110,7 +110,7 @@ class LayoutComposition(Module):
             image_scale = scale * self._out_size
             images[i] = cv2.resize(images[i], None, fx=image_scale, fy=image_scale)
 
-    def __get_pixel(self, point, image, coordinate):
+    def get_pixel(self, point, image, coordinate):
         """Gets image pixel value at a certain coordinate.
 
         This method determines appropriate offsets and then gets the pixel value of an image a point.

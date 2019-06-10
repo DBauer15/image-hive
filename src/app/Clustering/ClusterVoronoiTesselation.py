@@ -23,9 +23,9 @@ class ClusterVoronoiTesselation(Module):
         points = np.concatenate((np.array([self._data['cx']]).T, np.array([self._data['cy']]).T), axis=1)
 
         centroids, voronoi = clv.cvt(points, [0, 1, 0, 1], self._num_iterations)
-        self._create_result(centroids, voronoi)
+        self.create_result(centroids, voronoi)
 
-    def _create_result(self, centroids, voronoi):
+    def create_result(self, centroids, voronoi):
         """Arranges tessellation results in a new result object.
 
         Args:

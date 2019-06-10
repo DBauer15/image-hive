@@ -28,7 +28,7 @@ def main():
         SAMPLES_PER_CLUSTER = 6
         LAYOUT_DELTA = 0
         COMPOSITION_DELTA = 0
-        COMPOSITION_SIZE = 500
+        COMPOSITION_SIZE = 1200
 
     print('IMAGE_FOLDER: {}'.format(IMAGE_FOLDER))
     print('IMAGE_FILE_TYPE: {}'.format(IMAGE_FILE_TYPE))
