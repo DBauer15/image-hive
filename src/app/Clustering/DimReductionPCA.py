@@ -1,15 +1,14 @@
-from app.Module import Module
-from sklearn.manifold import TSNE
+from src.app.Module import Module
+from sklearn.decomposition import PCA
 import cv2
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-
-class DimReductionTSNE(Module):
-    """Applies t-SNE dimensionality reduction to higher dimensional clustering results.
+class DimReductionPCA(Module):
+    """Applies PCA dimensionality reduction to higher dimensional clustering results.
     """
     def __init__(self, prev_module):
-        super().__init__('DimReductionTSNE', prev_module)
+        super().__init__('DimReductionPCA', prev_module)
 
     def run(self):
         super().run()
@@ -17,29 +16,29 @@ class DimReductionTSNE(Module):
         centers = self._data['centers']
         features = np.concatenate((features, centers))
 
-        tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
-        tsne_result = tsne.fit_transform(features)
+        pca = PCA(n_components=2)
+        pca_result = pca.fit_transform(features)
 
         # Normalize results
-        tsne_result[:, 0] = (-np.min(tsne_result[:, 0]) + tsne_result[:, 0]) / (-np.min(tsne_result[:, 0]) + np.max(tsne_result[:, 0]))
-        tsne_result[:, 1] = (-np.min(tsne_result[:, 1]) + tsne_result[:, 1]) / (-np.min(tsne_result[:, 1]) + np.max(tsne_result[:, 1]))
+        pca_result[:, 0] = (-np.min(pca_result[:, 0]) + pca_result[:, 0])/(-np.min(pca_result[:, 0]) + np.max(pca_result[:, 0]))
+        pca_result[:, 1] = (-np.min(pca_result[:, 1]) + pca_result[:, 1])/(-np.min(pca_result[:, 1]) + np.max(pca_result[:, 1]))
 
         # Extract coordinates
-        tsne1 = tsne_result[:len(self._data['features']), 0]
-        tsne2 = tsne_result[:len(self._data['features']), 1]
-        tsnec1 = tsne_result[len(self._data['features']):, 0]
-        tsnec2 = tsne_result[len(self._data['features']):, 1]
+        pca1 = pca_result[:len(self._data['features']), 0]
+        pca2 = pca_result[:len(self._data['features']), 1]
+        pcac1 = pca_result[len(self._data['features']):, 0]
+        pcac2 = pca_result[len(self._data['features']):, 1]
 
         self._result = {
             'images': self._data['images'],
             'labels': self._data['labels'],
-            'cx': tsnec1,
-            'cy': tsnec2,
-            'x': tsne1,
-            'y': tsne2
+            'cx': pcac1,
+            'cy': pcac2,
+            'x': pca1,
+            'y': pca2
         }
 
-    def visualize(self, glyph_size=1):
+    def visualize(self, glyph_size=0.05):
         result = self.get_module_results()
         plt.figure()
         plt.axis([np.min(result['x']), np.max([result['x']]), np.min(result['y']), np.max(result['y'])])

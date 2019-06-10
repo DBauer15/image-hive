@@ -1,7 +1,7 @@
-from app.Module import Module
-from app.GraphLayout.ImageSaliency import ImageSaliency
-from app.GraphLayout.BubbleLayout import BubbleLayout
-from app.GraphLayout.LayoutComposition import LayoutComposition
+from src.app.Module import Module
+from src.app.GraphLayout.ImageSaliency import ImageSaliency
+from src.app.GraphLayout.BubbleLayout import BubbleLayout
+from src.app.GraphLayout.LayoutComposition import LayoutComposition
 
 
 class GraphLayout(Module):

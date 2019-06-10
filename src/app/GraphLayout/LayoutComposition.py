@@ -1,4 +1,4 @@
-from app.Module import Module
+from src.app.Module import Module
 import matplotlib.pyplot as plt
 import matplotlib.transforms as transforms
 import numpy as np

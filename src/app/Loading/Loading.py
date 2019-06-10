@@ -1,6 +1,6 @@
-from app.Module import Module
-from app.Loading.ImageSource import ImageSource
-from app.Loading.ImageLoader import ImageLoader
+from src.app.Module import Module
+from src.app.Loading.ImageSource import ImageSource
+from src.app.Loading.ImageLoader import ImageLoader
 
 
 class Loading(Module):

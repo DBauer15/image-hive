@@ -1,10 +1,9 @@
-from app.Module import Module
-from app.Clustering.ImageFeaturesHistogram import ImageFeaturesHistogram
-from app.Clustering.FeatureClusters import FeatureClusters
-from app.Clustering.ClusterSizeReduction import ClusterSizeReduction
-from app.Clustering.DimReductionPCA import DimReductionPCA
-from app.Clustering.DimReductionTSNE import DimReductionTSNE
-from app.Clustering.ClusterVoronoiTesselation import ClusterVoronoiTesselation
+from src.app.Module import Module
+from src.app.Clustering.ImageFeaturesHistogram import ImageFeaturesHistogram
+from src.app.Clustering.FeatureClusters import FeatureClusters
+from src.app.Clustering.ClusterSizeReduction import ClusterSizeReduction
+from src.app.Clustering.DimReductionPCA import DimReductionPCA
+from src.app.Clustering.ClusterVoronoiTesselation import ClusterVoronoiTesselation
 
 
 class Clustering(Module):

@@ -1,4 +1,4 @@
-from app.Module import Module
+from src.app.Module import Module
 import numpy as np
 import cv2
 from sklearn.cluster import KMeans

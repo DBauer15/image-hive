@@ -1,7 +1,7 @@
-from app.Module import Module
+from src.app.Module import Module
 import numpy as np
-import app.tools.clipped_voronoi as clv
-from scipy.spatial import Voronoi, voronoi_plot_2d
+import src.app.tools.clipped_voronoi as clv
+from scipy.spatial import voronoi_plot_2d
 import matplotlib.pyplot as plt
 
 

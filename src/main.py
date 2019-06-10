@@ -1,6 +1,6 @@
-from app.Loading.Loading import Loading
-from app.Clustering.Clustering import Clustering
-from app.GraphLayout.GraphLayout import GraphLayout
+from src.app.Loading.Loading import Loading
+from src.app.Clustering.Clustering import Clustering
+from src.app.GraphLayout.GraphLayout import GraphLayout
 import os.path as path
 import os
 import sys
@@ -38,7 +38,6 @@ def main():
     print('LAYOUT_DELTA: {}'.format(LAYOUT_DELTA))
     print('COMPOSITION_DELTA: {}'.format(COMPOSITION_DELTA))
     print('COMPOSITION_SIZE: {}'.format(COMPOSITION_SIZE))
-    return
 
     # Assemble pipeline
 
